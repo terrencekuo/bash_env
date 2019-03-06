@@ -1,3 +1,28 @@
+" setup vundle
+set nocompatible               " be iMproved
+filetype off                   " required!
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle
+" required!
+Plugin 'VundleVim/Vundle.vim'
+
+" My Bundles here:
+"
+" original repos on github
+Plugin 'ctrlpvim/ctrlp.vim'
+Plugin 'Yggdroot/indentLine'
+Plugin 'scrooloose/nerdtree'
+Plugin 'tomtom/tcomment_vim'
+Plugin 'vim-airline/vim-airline'
+Plugin 'easymotion/vim-easymotion'
+Plugin 'tpope/vim-fugitive'
+Plugin 'mhinz/vim-signify'
+
+call vundle#end()            " required
+filetype plugin indent on    " required
+
 " include number in gutter
 set number
 
@@ -8,12 +33,15 @@ colorscheme slate
 set background=dark
 set t_Co=256
 
+" allow prints to work
+set paste
+
 " change color of vim autocomplete popup menu
 " https://vi.stackexchange.com/questions/12664/is-there-any-way-to-change-the-popup-menu-color
 " https://jonasjacek.github.io/colors/
-highlight Pmenu ctermbg=59 guibg=59
-highlight PmenuSbar ctermbg=52 guibg=52
-highlight PmenuSel ctermbg=52 guibg=52
+highlight Pmenu ctermbg=blue guibg=blue
+highlight PmenuSbar ctermbg=black guibg=black
+highlight PmenuSel ctermbg=black guibg=black
 
 "tabs
 " 1. show existing tab with 4 space width
@@ -80,9 +108,6 @@ map <C-l> <C-W>l
 
 " use :Grep as opposed to :grep to open results in quick view window
 command! -bar -nargs=1 Grep silent grep <q-args> | redraw! | cw
-
-" install using pathogen
-execute pathogen#infect()
 
 " NERDTree
 " ctrl-n for opening NERDTree
