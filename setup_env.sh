@@ -1,3 +1,5 @@
+# NOTE: this script assumes that the user already has vim and tmux
+#
 # copy the vimrc and tmux.conf files to the home directory
 cp .vimrc ~/.vimrc
 cp .tmux.conf ~/.tmux.conf
