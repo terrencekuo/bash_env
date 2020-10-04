@@ -1,37 +1,55 @@
-set nocompatible              " be iMproved, required
-filetype off                  " required
+" pre-requisite
+" download:
+"   - the silver searcher (ag)
+"   - fuzy finder (fzf)
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" to install the plugins in vundle call the following command
+"     :PlugInstall
 
-" let Vundle manage Vundle, required
-Plugin 'VundleVim/Vundle.vim'
+" *********************************
+" vim plug
+" *********************************
 
-" vim plugins
-"
+" Specify a directory for plugins
+" - For Neovim: stdpath('data') . '/plugged'
+" - Avoid using standard Vim directory names like 'plugin'
+call plug#begin('~/.vim/plugged')
+
+" show color bar of vim mode at bottom the terminal
+Plug 'vim-airline/vim-airline'
+
 " show bars for the line indents
-Plugin 'Yggdroot/indentLine'
-" show file in the dir on the left panel
-Plugin 'scrooloose/nerdtree'
-" comment code using gc and gcc
-Plugin 'tomtom/tcomment_vim'
-" show color bar of vim mode
-Plugin 'vim-airline/vim-airline'
-" quickly jump to different code locations
-Plugin 'easymotion/vim-easymotion'
-" enable git commands within vim
-Plugin 'tpope/vim-fugitive'
-" show changes against git in gutter
-Plugin 'mhinz/vim-signify'
-" fuzzy find files
-Plugin 'ctrlpvim/ctrlp.vim'
+Plug 'Yggdroot/indentLine'
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
+" PlugInstall and PlugUpdate will clone fzf in ~/.fzf and run the install script
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+
+" intelligently reopen files in the last edit place
+Plug 'farmergreg/vim-lastplace'
+
+" quickly jump to different code locations
+Plug 'easymotion/vim-easymotion'
+
+" comment code using gc and gcc
+Plug 'tomtom/tcomment_vim'
+
+" show file in the dir on the left panel
+Plug 'scrooloose/nerdtree'
+
+" quickly jump to different code locations
+Plug 'tpope/vim-fugitive'
+
+" show changes against git in gutter
+Plug 'mhinz/vim-signify'
+
+call plug#end()
+
+" *********************************
+" vim options: http://vimdoc.sourceforge.net/htmldoc/options.html
+" *********************************
 
 " include number in gutter
+" the keyword set in vim is used for setting vim options
 set number
 
 " enable pasting
@@ -39,13 +57,55 @@ set paste
 
 " rename the tmux window name to the file that is currently open
 " also undo the tmux window name change once we leave vim
-autocmd BufReadPost,FileReadPost,BufNewFile * call system("tmux rename-window " . expand("%"))
+"
+" NOTE: autocmd are powerful things that allow us to run
+" run certain commands based on events that are happening. for
+" more info: http://vimdoc.sourceforge.net/htmldoc/autocmd.html
+"
+" autocmd-intro
+" you can specify commands to be executed automatically when reading
+" or writing a file, when entering or leaving a buffer or window, and
+" when exiting vim
+"
+" syntax
+" autocmd {event} {pattern} {cmd}
+"
+" {event}       - VimLeave      - is an event that is fired when you leave a vim window
+" {pattern}     - *             - pattern to match for all files
+" {cmd}         - call system() - run the command 'tmux rename-window bash'
+autocmd BufReadPre,BufReadPost,FileReadPre,FileReadPost,BufNew,BufNewFile,BufEnter,BufWinEnter,WinEnter,TabEnter * call system("tmux rename-window '" . expand("%:t") . "'")
 autocmd VimLeave * call system("tmux rename-window bash")
-autocmd BufEnter * let &titlestring = ' ' . expand("%:t")
 set title
 
-" enable syntax highlighting of code
-" set colorscheme
+" dont jump when searching the file using #
+"
+" NOTE: key mapping is used to change the meaning of typed keys. the most common
+" use is to define a sequence of commands for a function key
+" more info: http://vimdoc.sourceforge.net/htmldoc/map.html
+"
+" differences between map, noremap, nnoremap is whether or not the mapping is
+" recursive and which vim mode the mapping works for
+" more info: http://vimdoc.sourceforge.net/htmldoc/map.html
+" map - works for normal and visual mode (recursive)
+" noremap - works for normal and visual mode (not recursive)
+"
+" nmap - works for normal mode (recursive)
+" nnoremap - works for normal mode
+"
+" syntax
+" map {original_key} {new_key_and_instructions}
+"
+" {original_key}        - #
+" {new_key + instruc}   - :keepjumps normal! mi#`i<cr>
+"                       - the : is used to show what we type when in vim normal mode
+"                       - the keepjumps is the vim command
+nnoremap # :keepjumps normal! mi#`i<cr>
+
+"vim visual
+" 1. enable syntax highlighting of code
+" 2. set colorscheme
+" 3. set background color
+" 4. give vim support for 256 colors
 syntax on
 colorscheme slate
 set background=dark
@@ -72,7 +132,7 @@ set autoindent
 set copyindent
 set cindent
 
-" show tabs and whitespace
+" show tabs and whitespace with symbols
 set list
 set listchars=tab:▸\ ,trail:·,extends:❯,precedes:❮,nbsp:⎵
 
@@ -91,6 +151,7 @@ set hlsearch
 " don't beep
 set visualbell
 set noerrorbells
+set novb
 
 " use many levels of undo
 set undolevels=1000
@@ -109,6 +170,11 @@ hi TabLineSel ctermfg=Red ctermbg=Blue
 " <cr>                      this ends the mapping
 nnoremap <esc><esc> :let _s=@/ <bar> :%s/\s\+$//e <bar> :let @/=_s <bar> :redraw! <bar> silent! nohls <bar> <cr>
 
+" <Leader> is the \ keyboard input
+" this enables one ot quickly do a search and replace
+" the \< and \> are used for ensuring only complete words are found
+nnoremap <Leader>s :%s/\<<C-r><C-w>\>/
+
 " prevent delay between switching vim modes
 set ttimeoutlen=10
 
@@ -126,6 +192,11 @@ nnoremap x "_x
 
 " map tn/tk/tj/th/tl to navigate through tabs
 " the nnoremap allows you to use keywords when normal mode
+"
+" example
+" when pressing tn keys we call the tabnew command and press space
+" the : is used to show what we type when in vim normal mode
+" the <CR> is a new line character to represent pressing entering after writing the vim character
 nnoremap tn :tabnew<Space>
 nnoremap tk :tabnext<CR>
 nnoremap tj :tabprev<CR>
@@ -133,6 +204,7 @@ nnoremap th :tabfirst<CR>
 nnoremap tl :tablast<CR>
 
 " map Ctrl+j/k/h/l to move between windows
+" <C-j> represents pressing the ctrl key then the j key
 map <C-j> <C-W>j
 map <C-k> <C-W>k
 map <C-h> <C-W>h
@@ -143,14 +215,41 @@ command! -bar -nargs=1 Grep silent grep <q-args> | redraw! | cw
 
 " NERDTree
 " ctrl-n for opening NERDTree
+"
+" map {old_key} {new_instructions}
+"
+" {old_key}             - <C-n>                 - control key then n
+" {new_instructions}    - :NERDTreeToggle<CR>   - command you would type in normal mode
 map <C-n> :NERDTreeToggle<CR>
 
 " ctrlp.vim - a full finder for vim
+"
+" the keyword let is for assigning a value to a variable
+"
+" to find out more about g look at :help internal-variables
+" g is a Global
+
+" here we have
+"   let g:ctrlp_map = '<c-f>'
+"
+" let           keyword to assign a value to variable
+" g:ctrl_map    global variable that is builtin from the ctrlp plugin
+" '<c-f>'       new value inside that variable
+"
+"
+" <leader> key is maped to \ key by default
+" the \ key is used in vim. one example is searching when in normal mode
+"
 " 1. map cntrlp plugin to cntrl-f to allow native cntrl-p autocomplete
 "       note: the 'let g' is used to set global settings for the ctrlp plugin
 " 2. enable ctrlp to search ctags
-let g:ctrlp_map = '<c-f>'
-nnoremap <leader>. :CtrlPTag<cr>
+"let g:ctrlp_map = '<c-f>'
+"nnoremap <leader>. :CtrlPTag<cr>
+
+" NOW USE FZF INSTEAD OF CTRLP
+"
+" this says when we press CTRL + f we will write :FZF + enter to bring up the fzf window
+nnoremap <C-f> :FZF<CR>
 
 " ctags - search for functions and variable definitions
 " 1. add path to tags for linux
@@ -161,22 +260,31 @@ map <C-o> <C-w>s<C-]>
 map <C-e> <C-w>v<C-]>
 
 " easy motion - type 'ss' to trigger easy motion to start
+"
+" <Plug> is a special character meant to be mapped
 nmap s <Plug>(easymotion-prefix)
 
 " silver searcher (ag)
 " make sure to download 'ag'
 " https://robots.thoughtbot.com/faster-grepping-in-vim
 " this opens results in a 'quickfix' window
+"
+" this if checks if the 'ag' system call is available on
+" this system
 if executable('ag')
+    " if the 'ag' executable exists them we do the things
+    " in this loop
+    "
     " Use ag over grep
-    set grepprg=ag\ --nogroup\ --nocolor
+    set grepprg=ag\ --nogroup
 
     " Use ag in CtrlP for listing files. Lightning fast and respects .gitignore
     let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 
-    " ag is fast enough that CtrlP doesn't need to cache
-    let g:ctrlp_use_caching = 0
+    " ag is fast enough that CtrlP doesn't need to cache but let's use it
+    let g:ctrlp_use_caching = 1
 endif
 
 " bind K to grep word under cursor
 nnoremap K :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>
+
