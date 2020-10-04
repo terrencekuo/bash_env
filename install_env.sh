@@ -10,5 +10,9 @@ cp .tmux.conf ~/.tmux.conf
 # https://github.com/junegunn/vim-plug
 curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# install bundles using vundle with vim
+# install vim plugins via the command line
+vim -E -s -u "~/.vimrc" +PlugInstall +qall
 vim +PluginInstall +qall
+
+# install tmux plugins via the command line
+~/.tmux/plugins/tpm/scripts/install_plugins.sh

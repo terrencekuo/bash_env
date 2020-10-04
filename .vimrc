@@ -3,11 +3,12 @@
 "   - the silver searcher (ag)
 "   - fuzy finder (fzf)
 
-" to install the plugins in vundle call the following command
+" to install the plugins
 "     :PlugInstall
 
 " *********************************
 " vim plug
+" https://github.com/junegunn/vim-plug
 " *********************************
 
 " Specify a directory for plugins
@@ -21,7 +22,7 @@ Plug 'vim-airline/vim-airline'
 " show bars for the line indents
 Plug 'Yggdroot/indentLine'
 
-" PlugInstall and PlugUpdate will clone fzf in ~/.fzf and run the install script
+" :PlugInstall and :PlugUpdate will clone fzf in ~/.fzf and run the install script
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 
 " intelligently reopen files in the last edit place
